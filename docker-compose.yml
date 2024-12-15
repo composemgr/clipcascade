@@ -1,0 +1,22 @@
+name: clipcascade
+services:
+  server:
+    image: sathvikrao/clipcascade:latest
+    container_name: clipcascade
+    hostname: clipcascade
+    restart: always
+    ports:
+      - '172.17.0.1:59063:8080'
+    environment:
+      - CC_USERNAME=${APP_USER_NAME:-admin}
+      - CC_PASSWORD=${APP_USER_PASS:-passw@rd}
+      - CC_MAX_MESSAGE_SIZE=1
+    volumes:
+      - /var/lib/srv/$USER/docker/sathvikrao/clipcascade/latest/rootfs/data/clipcascade:/data
+    networks:
+      - clipcascade
+
+networks:
+  clipcascade:
+    name: clipcascade
+    external: false
