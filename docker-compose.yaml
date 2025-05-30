@@ -1,4 +1,4 @@
-# nginx proxy address - http://172.17.0.1:60236
+# nginx proxy address - http://172.17.0.1:59063
 
 name: clipcascade
 x-logging: &default-logging
@@ -10,7 +10,7 @@ x-logging: &default-logging
 services:
   app:
     image: sathvikrao/clipcascade:latest
-    container_name: clipcascade
+    container_name: clipcascade-app
     hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     pull_policy: always
@@ -22,7 +22,7 @@ services:
     ports:
       - '172.17.0.1:59063:8080'
     volumes:
-      - /var/lib/srv/$USER/docker/sathvikrao/clipcascade/latest/rootfs/data/clipcascade:/data
+      - '/var/lib/srv/$USER/docker/clipcascade/rootfs/data/clipcascade:/data'
     networks:
       - clipcascade
 
