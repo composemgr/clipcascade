@@ -1,0 +1,33 @@
+# nginx proxy address - http://172.17.0.1:59063
+
+name: clipcascade
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: sathvikrao/clipcascade:latest
+    container_name: clipcascade-app
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      CC_MAX_MESSAGE_SIZE: 1
+      CC_USERNAME: ${APP_USER_NAME:-administrator}
+      CC_PASSWORD: ${APP_USER_PASS:-changeme_user_password}
+    ports:
+      - '172.17.0.1:59063:8080'
+    volumes:
+      - './rootfs/data/clipcascade:/data'
+    networks:
+      - clipcascade
+
+networks:
+  clipcascade:
+    name: clipcascade
+    external: false
