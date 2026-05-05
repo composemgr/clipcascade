@@ -23,7 +23,7 @@ services:
     ports:
       - '172.17.0.1:59063:8080'
     volumes:
-      - './rootfs/data/clipcascade:/data'
+      - './volumes/data/clipcascade:/data'
     networks:
       - clipcascade
 
