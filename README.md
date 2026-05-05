@@ -47,7 +47,7 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/clipcascade` - Data storage
+- `./volumes/data/clipcascade` - Data storage
 
 ## 🔐 Security
 
