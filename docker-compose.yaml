@@ -20,14 +20,38 @@ services:
       CC_MAX_MESSAGE_SIZE: ${CC_MAX_MESSAGE_SIZE:-1}
       CC_USERNAME: ${APP_ADMIN_USER:-admin}
       CC_PASSWORD: ${APP_ADMIN_PASS:-changeme_admin_password}
+      CONTAINER_NAME: clipcascade-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     ports:
       - '172.17.0.1:59063:8080'
     volumes:
       - './volumes/data/clipcascade:/data'
     networks:
       - clipcascade
+      - proxy
+      - cloudflare
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://clipcascade-app:8080'
+      - 'cloudflare.hostname=clipcascade.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.clipcascade-app.entrypoints=http'
+      - 'traefik.http.routers.clipcascade-app-secure.tls=true'
+      - 'traefik.http.routers.clipcascade-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.clipcascade-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.clipcascade-app.middlewares=clipcascade-app-https-redirect'
+      - 'traefik.http.routers.clipcascade-app-secure.entrypoints=https'
+      - 'traefik.http.routers.clipcascade-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.clipcascade-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.clipcascade-app-secure.service=clipcascade-app'
+      - 'traefik.http.services.clipcascade-app.loadbalancer.server.port=8080'
 
 networks:
   clipcascade:
     name: clipcascade
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
