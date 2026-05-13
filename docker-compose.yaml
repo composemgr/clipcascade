@@ -17,15 +17,14 @@ services:
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
-      CC_MAX_MESSAGE_SIZE: ${CC_MAX_MESSAGE_SIZE:-1}
-      CC_USERNAME: ${APP_ADMIN_USER:-admin}
-      CC_PASSWORD: ${APP_ADMIN_PASS:-changeme_admin_password}
+      CC_MAX_MESSAGE_SIZE_IN_MiB: ${CC_MAX_MESSAGE_SIZE:-1}
+      CC_P2P_ENABLED: false
       CONTAINER_NAME: clipcascade-app
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     ports:
       - '172.17.0.1:59063:8080'
     volumes:
-      - './volumes/data/clipcascade:/data'
+      - './volumes/data/clipcascade:/database'
     networks:
       - clipcascade
       - proxy
