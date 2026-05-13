@@ -17,9 +17,9 @@ services:
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
-      CC_MAX_MESSAGE_SIZE: 1
-      CC_USERNAME: ${APP_USER_NAME:-administrator}
-      CC_PASSWORD: ${APP_USER_PASS:-changeme_user_password}
+      CC_MAX_MESSAGE_SIZE: ${CC_MAX_MESSAGE_SIZE:-1}
+      CC_USERNAME: ${APP_ADMIN_USER:-admin}
+      CC_PASSWORD: ${APP_ADMIN_PASS:-changeme_admin_password}
     ports:
       - '172.17.0.1:59063:8080'
     volumes:
