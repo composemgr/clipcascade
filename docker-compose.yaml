@@ -1,4 +1,4 @@
-# nginx proxy address - http://172.17.0.1:59063
+# nginx proxy address - http://172.17.0.1:64138
 
 name: clipcascade
 x-logging: &default-logging
@@ -11,46 +11,32 @@ services:
   app:
     image: sathvikrao/clipcascade:latest
     container_name: clipcascade-app
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
     hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     pull_policy: always
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
-      CC_MAX_MESSAGE_SIZE_IN_MiB: ${CC_MAX_MESSAGE_SIZE:-1}
-      CC_P2P_ENABLED: false
+      SERVER_PORT: 8080
+      BASE_URL: ${BASE_HOST_NAME:-$HOSTNAME}
+      AUTH_SECRET: ${APP_SECRET_KEY:-replace-with-a-random-32-byte-hex-string}
+      ADMIN_USERNAME: ${APP_ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${APP_ADMIN_PASS:-replace-with-a-random-password}
+      MAX_MESSAGE_SIZE_MB: ${CC_MAX_MESSAGE_SIZE:-1}
+      MAX_FILENAME_LENGTH: 255
+      MAX_TOTAL_FILENAME_LENGTH: 1000
+      ENABLE_METRICS: false
       CONTAINER_NAME: clipcascade-app
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     ports:
-      - '172.17.0.1:59063:8080'
+      - '172.17.0.1:64138:8080'
     volumes:
       - './volumes/data/clipcascade:/database'
     networks:
       - clipcascade
-      - proxy
-      - cloudflare
-    labels:
-      - 'traefik.enable=true'
-      - 'cloudflare.enable=true'
-      - 'traefik.docker.network=proxy'
-      - 'cloudflare.service=http://clipcascade-app:8080'
-      - 'cloudflare.hostname=clipcascade.${CLOUDFLARE_ZONE_NAME:-}'
-      - 'traefik.http.routers.clipcascade-app.entrypoints=http'
-      - 'traefik.http.routers.clipcascade-app-secure.tls=true'
-      - 'traefik.http.routers.clipcascade-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
-      - 'traefik.http.middlewares.clipcascade-app-https-redirect.redirectscheme.scheme=https'
-      - 'traefik.http.routers.clipcascade-app.middlewares=clipcascade-app-https-redirect'
-      - 'traefik.http.routers.clipcascade-app-secure.entrypoints=https'
-      - 'traefik.http.routers.clipcascade-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
-      - 'traefik.http.routers.clipcascade-app-secure.tls.certresolver=cloudflare'
-      - 'traefik.http.routers.clipcascade-app-secure.service=clipcascade-app'
-      - 'traefik.http.services.clipcascade-app.loadbalancer.server.port=8080'
 
 networks:
   clipcascade:
     name: clipcascade
     external: false
-  proxy:
-    external: true
-  cloudflare:
-    external: true

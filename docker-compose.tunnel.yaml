@@ -1,0 +1,45 @@
+name: clipcascade
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: sathvikrao/clipcascade:latest
+    container_name: clipcascade-app
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      SERVER_PORT: 8080
+      BASE_URL: ${BASE_HOST_NAME:-$HOSTNAME}
+      AUTH_SECRET: ${APP_SECRET_KEY:-replace-with-a-random-32-byte-hex-string}
+      ADMIN_USERNAME: ${APP_ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${APP_ADMIN_PASS:-replace-with-a-random-password}
+      MAX_MESSAGE_SIZE_MB: ${CC_MAX_MESSAGE_SIZE:-1}
+      MAX_FILENAME_LENGTH: 255
+      MAX_TOTAL_FILENAME_LENGTH: 1000
+      ENABLE_METRICS: false
+      CONTAINER_NAME: clipcascade-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+    volumes:
+      - './volumes/data/clipcascade:/database'
+    labels:
+      - 'cloudflare.enable=true'
+      - 'cloudflare.service=http://clipcascade-app:8080'
+      - 'cloudflare.hostname=${BASE_HOST_NAME:-$HOSTNAME}'
+    networks:
+      - clipcascade
+      - cloudflare
+
+networks:
+  clipcascade:
+    name: clipcascade
+    external: false
+  cloudflare:
+    external: true
